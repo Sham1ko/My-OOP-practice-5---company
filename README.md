@@ -1,3 +1,4 @@
-# My-OOP-practice-5---company
+# My OOP practice 5 - company
 
-Exercise was made by Shamshyrak Zholdasbek SE-2018
+This exercise was made by Shamshyrak Zholdasbek.
+Group: SE-2018
