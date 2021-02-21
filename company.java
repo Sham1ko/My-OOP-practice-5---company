@@ -77,7 +77,7 @@ public class company {
         try {
             Statement statement;
             statement=connection.createStatement();
-            ResultSet rs = statement.executeQuery("select * from company inner join project on company.project_id=project.project_id");
+            ResultSet rs = statement.executeQuery("select id,name,surname from company join project on company.project_id=project.project_id where company.project_id="+project_id);
             while (rs.next()){
                 System.out.println(rs.getInt("id")+" "+rs.getString("name")+" "+rs.getString("surname"));
             }
@@ -239,13 +239,8 @@ public class company {
                     if (SecondOption==6){
                         break;
                     }
-
                 }
-                }
-
-
-
-
+            }
         }
     }
 }
