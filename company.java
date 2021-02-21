@@ -1,9 +1,10 @@
 import java.sql.*;
 import java.util.Scanner;
-
 public class company {
-
     public static Connection get_connection() {
+        /*
+        * Connecting to my external DMBS (PostgreSQL) using Java
+        */
         Connection connection=null;
         try {
             Class.forName("org.postgresql.Driver");
@@ -19,10 +20,9 @@ public class company {
         }
         return connection;
     }
-
     private static Connection connection;
-
-
+    //Method to kick Member from certain Project
+    //Used Update Statement from SQL
     public static void delete(int id) {
         try {
             Statement statement;
@@ -32,7 +32,8 @@ public class company {
             e.printStackTrace();
         }
     }
-
+    //Method to Output all Project's names in Company
+    //Used Select Statement from SQL
     public static void projectNameOutput(){
         try {
             Statement statement;
@@ -47,9 +48,8 @@ public class company {
             System.out.println("Error");
         }
     }
-
-
-
+    //Method to select Members to certain Project
+    //Used Update statement from SQL
     public static void projectMembersSelect(int id,int project_id){
             try {
                 Statement statement;
@@ -59,7 +59,8 @@ public class company {
                 System.out.println("Invalid value");
             }
     }
-
+    //Method to find all Available Members from Company that do not participate in any projects
+    //Used Select statement from SQL
     public static void projectMembersAvailable(){
         try {
             Statement statement;
@@ -72,7 +73,8 @@ public class company {
             e.printStackTrace();
         }
     }
-
+    //Method to output Current Members of Project
+    //Used "Select" from sql and Statement from Java
     public static void projectMembersCurrent(int project_id){
         try {
             Statement statement;
@@ -86,6 +88,8 @@ public class company {
         }
     }
 
+    //Method to find TOTAL COST of one Project
+    //I used "sum" operator from SQL language
     public static void ProjectCost(int project_id){
         try {
             Statement statement;
@@ -99,13 +103,28 @@ public class company {
     }
 
     public static void main(String[] args) throws SQLException {
-
-        Scanner obj=new Scanner(System.in);
+        //Using Scanner to choose Option in Console Menu
+        Scanner scanner=new Scanner(System.in);
         Statement statement;
+        //Connecting to my external DBMS - PostgreSQL
         connection=get_connection();
-
+        /*
+        * Creating three tables to my company
+        * First table I used for the all employees in company
+        * There we have Five columns with their ID,Name,Surname,Position_ID and Project_ID
+        * But at the beginning every Employee have "null" in Project_ID column
+        * Because I did this Java Console Application as Constructor
+        *
+        * Second table was used to positions in company
+        * There are data about position_ID,position's name and salary for definite position
+        * In company we have 6 positions(Including 1 CEO)
+        *
+        * Third table was used to Projects in company
+        * There are data for Project_ID and its name
+        * Here in company I did 4 projects
+        * I have chosen 4 different names of Top Popular Social Medias
+        */
         try {
-
             String query="create table position(position_id int primary key,position varchar,salary int);" +
                     "create table project(project_id int primary key,project varchar);"+
                     "create table company(id int primary key,name varchar,surname varchar,position_id int references position(position_id),project_id int references project(project_id));";
@@ -117,8 +136,11 @@ public class company {
         } catch (Exception e){
             System.out.println("You have already created same tables.");
         }
-        try {
 
+        /*
+        * HERE I INSERT DATA TO TABLES IN DBMS
+        * AND IF YOU HAVE ALREADY INSERTED DATA SO IT WILL OUTPUT EXCEPTION*/
+        try {
             String query="insert into position(position_id,position,salary) values(1,'CEO',10000);" +
                     "insert into position(position_id,position,salary) values(2,'Product Manager',4000);" +
                     "insert into position(position_id,position,salary) values(3,'Engineer',5000);" +
@@ -132,7 +154,6 @@ public class company {
         } catch (Exception e){
             System.out.println("You have already inserted data in table 'Position'");
         }
-
         try {
             String query="insert into project(project_id,project) values(1,'Telegram');" +
                     "insert into project(project_id,project) values(2,'Instagram');" +
@@ -141,13 +162,12 @@ public class company {
             statement=connection.createStatement();
             statement.executeUpdate(query);
             System.out.println("Data inserted in table 'Project'");
-
         } catch (Exception e){
             System.out.println("You have already inserted data in table 'Project'");
         }
-
+        //I have inserted 20 members in table "company"
+        //I used Mockaroo.com to generate this data
         try {
-
             String query="insert into company (id, name, surname, position_id) values (1, 'Zholdasbek', 'Shamshyrak', 1);\n" +
                     "insert into company (id, name, surname, position_id) values (2, 'Silvan', 'Verdie', 2);\n" +
                     "insert into company (id, name, surname, position_id) values (3, 'Roley', 'Kiehne', 3);\n" +
@@ -177,66 +197,69 @@ public class company {
         }
 
         while (true){
-
+            /*
+            * Here starts Console Menu of my application*/
             System.out.println("\nChoose your option:");
             System.out.println("1.Show all projects");
             System.out.println("2.Choose project");
-            int n = obj.nextInt();
-
+            int n = scanner.nextInt();
+            //Here I used method to output all Projects
             if (n==1){
                 projectNameOutput();
             }
-
+            //Here I did that if you selected this option you will be in the next page
+            //You will have option to exit
             if (n==2){
                 System.out.println("Enter id of project:");
-                int prid=obj.nextInt();
+                int projectId=scanner.nextInt();
                 try {
-                    Statement statement1;
-                    statement1=connection.createStatement();
-                    ResultSet rs = statement1.executeQuery("select * from project where project_id="+prid);
+                    Statement firstStatement;
+                    firstStatement=connection.createStatement();
+                    ResultSet rs = firstStatement.executeQuery("select * from project where project_id="+projectId);
                     rs.next();
                     System.out.println("You have selected "+rs.getString("project"));
                 }catch (Exception e){
                     System.out.println("Invalid value");
                 }
                 while (true){
-                    System.out.println("OPTIONS:");
-                    System.out.println("1.Show current members of this project");
-                    System.out.println("2.Show available members to this project");
-                    System.out.println("3.Select members to this project");
-                    System.out.println("4.Show total cost of this project");
-                    System.out.println("5.Delete member from project");
-                    System.out.println("6.Exit to the main menu");
-
-                    int SecondOption= obj.nextInt();
-
-                    if (SecondOption==1){
+                    //Here I printed out options that users can choose
+                    System.out.println("OPTIONS:\n" +
+                            "1.Show current members of this project\n" +
+                            "2.Show available members to this project\n" +
+                            "3.Select members to this project\n" +
+                            "4.Show total cost of this project\n" +
+                            "5.Delete member from project\n" +
+                            "6.Exit to the main menu\n");
+                    //Scanner to choose second page's option
+                    int secondOption= scanner.nextInt();
+                    if (secondOption==1){
                         System.out.println("CURRENT MEMBERS");
-                        projectMembersCurrent(prid);
+                        projectMembersCurrent(projectId);
                     }
-                    if (SecondOption==2){
+                    if (secondOption==2){
                         System.out.println("AVAILABLE MEMBERS");
                         projectMembersAvailable();
                     }
-                    if (SecondOption==3){
+                    if (secondOption==3){
                         System.out.println("How many members do you want to add?");
-                        int num = obj.nextInt();
-                        while (num!=0){
+                        int numMembers = scanner.nextInt();
+                        while (numMembers!=0){
                             System.out.println("Enter id of member that you want to add to this project:");
-                            int memberId=obj.nextInt();
-                            projectMembersSelect(memberId,prid);
-                            num--;
+                            int memberId=scanner.nextInt();
+                            projectMembersSelect(memberId,projectId);
+                            numMembers--;
                         }
                     }
-                    if (SecondOption==4){
-                        ProjectCost(prid);
+                    if (secondOption==4){
+                        ProjectCost(projectId);
                     }
-                    if (SecondOption==5){
-                        System.out.println("Enter id of member:");
-                        int memid=obj.nextInt();
-                        delete(memid);
+                    if (secondOption==5){
+                        System.out.println("Enter ID of member:");
+                        int memberID=scanner.nextInt();
+                        delete(memberID);
                     }
-                    if (SecondOption==6){
+                    //Option to exit this page
+                    if (secondOption==6){
                         break;
                     }
                 }
